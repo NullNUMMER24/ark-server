@@ -1,0 +1,16 @@
+[Unit]
+Description=ARK Survival Evolved
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=3
+ExecStartPre=/home/ark/steamcmd +login anonymous +force_install_dir /home/ark/server +app_update 445400 +quit
+ExecStart=/home/ark/server/ShooterGame/Binaries/Linux/ShooterGameServer TheIsland?listen?SessionName=NullNUMMER24 -server -log -crossplay
+ExecStop=killall -TERM srcds_linux
+
+[Install]
+WantedBy=multi-user.target
+===============
