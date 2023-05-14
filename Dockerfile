@@ -1,39 +1,28 @@
 FROM ubuntu:latest
 
-# Update the System
-RUN apt-get update && sudo apt-get upgrade
+# Update and install dependencies
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y lib32gcc1 lib32stdc++6 libc6-i386 libcurl4-gnutls-dev:i386 libsdl2-2.0-0:i386 curl && \
+    apt-get clean
 
-# Install ufw
-RUN apt-get install ufw 
-RUN systemctl start ufw 
-RUN systemctl enable ufw 
+# Install SteamCMD
+RUN curl -s https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar -v -C /usr/local/ -xz
 
-# Configure ufw
-RUN ufw allow 27015/udp
-RUN ufw allow 7777/udp
-RUN ufw allow 7778/udp
-RUN ufw allow 27020/tcp
+# Create a steam user and switch to that user
+RUN useradd -m steam
+USER steam
+WORKDIR /home/steam
 
-# Increase the allowed number of open files
-RUN echo “fs.file-max=100000” >> /etc/sysctl.conf && sysctl -p
-RUN echo “* soft nofile 1000000” >> /etc/security/limits.conf
-RUN echo “* hard nofile 1000000” >> /etc/security/limits.conf
-RUN echo “session required pam_limits.so” >> /etc/pam.d/common-session
+# Download and install the ARK server
+RUN /usr/local/steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/steam/server +app_update 376030 +quit
 
-# Create the server directory
-RUN mkdir server
+# Expose ports for ARK
+EXPOSE 7777/udp
+EXPOSE 7778/udp
+EXPOSE 27015/udp
+EXPOSE 27020/tcp
 
-# symlink from /usr/games/steamcmd to steamcmd
-RUN ln -s /usr/games/steamcmd steamcmd
-
-# RUN steamcmd
-RUN steamcmd +login anonymous +force_install_dir /home/ark/server +app_update 445400 +quit
-
-# COPY the service filem
-COPY ark.service /lib/systemd/system/
-
-# Start the ARK Service
-RUN systemctl deamon-reload
-RUN systemctl enable ark.service
-CMD systemctl start ark
-
+# Start the ARK server
+WORKDIR /home/steam/server/ShooterGame/Binaries/Linux
+ENTRYPOINT ["./ShooterGameServer", "TheIsland?listen?SessionName=MyServer", "-server", "-log"]
