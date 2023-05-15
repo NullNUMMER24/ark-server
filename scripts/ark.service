@@ -1,19 +1,16 @@
 [Unit]
-Description=Ark Survival Evolved Dedicated Server
-Wants=network-online.target
-After=syslog.target network.target multi-user.target
+Description=ARK Survival Evolved
 
 [Service]
-User=steam
-Group=steam
 Type=simple
 Restart=on-failure
-RestartSec=5s
-TimeoutStartSec=600
-ExecStartPre=/home/steam/steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/steam/ark +app_update 376030 +quit
-ExecStart=/home/steam/ark/ShooterGame/Binaries/Linux/ShooterGameServer TheIsland?listen?SessionName=MyServer?ServerPassword=MyPassword?ServerAdminPassword=MyAdminPassword -server -log
-ExecStop=/home/steam/ark/ShooterGame/Binaries/Linux/ShooterGameServer TheIsland?listen?SessionName=MyServer?ServerPassword=MyPassword?ServerAdminPassword=MyAdminPassword -server -log -shutdown
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=3
+ExecStartPre=/home/ark/steamcmd +login anonymous +force_install_dir /home/ark/server +app_update 445400 +quit
+ExecStart=/home/ark/server/ShooterGame/Binaries/Linux/ShooterGameServer TheIsland?listen?SessionName=NullNUMMER24 -server -log -crossplay
+ExecStop=killall -TERM srcds_linux
 
 [Install]
 WantedBy=multi-user.target
-
+===============
