@@ -1,0 +1,19 @@
+[Unit]
+Description=Ark Survival Evolved Dedicated Server
+Wants=network-online.target
+After=syslog.target network.target multi-user.target
+
+[Service]
+User=steam
+Group=steam
+Type=simple
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=600
+ExecStartPre=/home/steam/steamcmd/steamcmd.sh +login anonymous +force_install_dir /home/steam/ark +app_update 376030 +quit
+ExecStart=/home/steam/ark/ShooterGame/Binaries/Linux/ShooterGameServer TheIsland?listen?SessionName=MyServer?ServerPassword=MyPassword?ServerAdminPassword=MyAdminPassword -server -log
+ExecStop=/home/steam/ark/ShooterGame/Binaries/Linux/ShooterGameServer TheIsland?listen?SessionName=MyServer?ServerPassword=MyPassword?ServerAdminPassword=MyAdminPassword -server -log -shutdown
+
+[Install]
+WantedBy=multi-user.target
+
