@@ -13,5 +13,3 @@ sudo apt install lib32gcc1 lib32stdc++6 libc6-i386 libcurl4-gnutls-dev:i386 libs
 sudo apt install steamcmd -y
 # Create symlink
 ln -s /usr/games/steamcmd steamcmd
-# Run steamcmd
-steamcmd +login anonymous +force_install_dir /home/ark/server +app_update 376030 +quit
